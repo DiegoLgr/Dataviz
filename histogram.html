@@ -19,6 +19,19 @@
 <script>
 
 
+/* --------------------- Final Visualization --------------------------- */
+
+function createChart(data){
+    let svg = SVG('#chart').size(WIDTH, HEIGHT);
+    // Bar chart.
+    let chart = data.map((d, i) => drawBar(svg, d, i));
+    // Sorting button.
+    Butons(svg, chart)
+        .add(ascendent)
+        .add(descendent)
+        .add(category)
+        .add(shuffle);
+}
 
 
 /* --------------- Chart -------------------*/
@@ -65,6 +78,22 @@ function mapCat(cat){
     }
 }
 
+/*  -------------------  Buttons -------------------- */
+
+function Butons(draw, chart){
+    return {
+        n: 0,
+        add: function (fn){
+            draw.rect(60, 40)
+                .fill('#999')
+                .move(this.n*80, 20)
+                .click(()=>sort(chart, fn));
+            this.n += 1;
+	    return this;
+        }
+    }
+}
+
 /* ------------- Shorting Bars ----------------*/
 
 function sort(chart, fn){
@@ -81,6 +110,25 @@ function calcTranslation(i, j){
 
 }
 
+// sorting functions
+function descendent(a, b){ return b.data.n - a.data.n };
+function ascendent(a, b){ return a.data.n - b.data.n };
+function category(a, b){ return a.data.category - b.data.category; };
+function shuffle(a,b){ return 0.5 - Math.random(); };
+
+
+/* --------------------- Mock ------------------- */
+
+function newData(i){
+    // Knowledges must have an id, a number, and a discipline (nat);
+    return {
+        id: i,
+        name: `Something ${ i }`,
+        category: randomFrom(SET),
+        n: (MAX_BAR_H) * Math.random(),  // random from [0, 400).
+    }
+}
+
 
 /* --------------------- Lib ------------------- */
 
@@ -94,58 +142,6 @@ function range(n){
     return r;
 }
 
-/*  -------------------  Buttons -------------------- */
-
-function Butons(draw, chart){
-    return {
-        n: 0,
-        add: function addSortingButton(fn){
-            draw.rect(60, 40)
-                .fill('#999')
-                .move(this.n*80, 20)
-                .click(()=>sort(chart, fn));
-            this.n += 1;
-        }
-    }
-}
-// sorting functions
-let descendent = (a, b) => b.data.n - a.data.n;
-let ascendent = (a, b) => a.data.n - b.data.n;
-let category = (a, b) => a.data.category - b.data.category;
-let shuffle = (a,b) => 0.5 - Math.random();
-
-function newData(i){
-    // Knowledges must have an id, a number, and a discipline (nat);
-    return {
-        id: i,
-        name: `Something ${ i }`,
-        category: randomFrom(SET),
-        n: (MAX_BAR_H) * Math.random(),  // random from [0, 400).
-    }
-}
-
-
-/* ------------------------ Final Chart ------------------------------ */
-
-function createChart(){
-    let svg = SVG('#chart').size(WIDTH, HEIGHT);
-
-    let data = range(N).map(newData);
-    data[7].name = 'A long name test';
-    data[8].name = 'short';
-
-    // Draw the chart.
-    let chart = data.map((d, i) => drawBar(svg, d, i));
-
-    // Sorting button.
-    let buttons = Butons(svg, chart);
-    buttons.add(ascendent);
-    buttons.add(descendent);
-    buttons.add(category);
-    buttons.add(shuffle);
-}
-
-
 
 /* ------------------------ Main ---------------------------------- */
 
@@ -157,14 +153,18 @@ const MAX_BAR_H = 520;                      // length of taller bar.
 const BARM = BARW / 10;                     // distance btw bars.
 const WIDTH = N * (BARW + BARM) + BARM;     // A bit of margin in both sides.
 
-createChart();
+let data = range(N).map(newData);
+data[7].name = 'A long name test';
+data[8].name = 'short';
+
+createChart(data);
 
 
 </script>
 <style>
 
 .lable {
-    fill: #999;
+    fill: #777;
 }
 
 </style>
