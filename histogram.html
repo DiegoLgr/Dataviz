@@ -1,0 +1,171 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.0.16/svg.min.js" integrity="sha512-p3Tp2zn+wApBreZCgRkmMwnfpN8MUPXzzOihXx7iGYXqE7t6m9drY8HeyMeeFuDWiTFKrGUrq3jpbT0vX6zY/Q==" crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <meta charset="utf-8">
+
+    <title>TWS barchart</title>
+</head>
+
+<body>
+<div style="display: flex; justify-content: center;">
+    <svg id="chart">
+    </svg>
+</div>
+
+</body>
+<script>
+
+
+
+
+/* --------------- Chart -------------------*/
+
+function drawBar(draw, data, i){
+    let y0 = HEIGHT - 200;
+    let rect = draw.rect(BARW, data.n)
+
+    let lable = draw.text(data.name)
+                    .move(BARW/2, 0)
+                    .font({ anchor: 'middle' })
+                    .rotate(-90)
+                    .addClass('lable');
+    let l = lable.length();
+    lable.move(10-data.n-l, 0);
+
+
+    let x = calcX(i);
+    let y = calcY(y0, data.n);
+    let svg = draw.group()
+        .add(rect)
+        .add(lable)
+        .move(x, y)
+        .attr({ fill: mapCat(data.category) })
+        .addClass('bar');
+
+    return { i: i, data: data, svg: svg };
+}
+
+function calcX(i, w, m){
+    return i*BARW + i*BARM;
+}
+
+function calcY(y0, h){
+    return y0 - h;
+}
+
+function mapCat(cat){
+    switch (cat){
+        case 0: return '#313962';
+        case 1: return '#5f6caf';
+        case 2: return '#95ce8e';
+        case 3: return '#e65a28';
+    }
+}
+
+/* ------------- Shorting Bars ----------------*/
+
+function sort(chart, fn){
+    chart.forEach((x, i) => x.i = i);
+    chart = chart.sort(fn);
+    chart.forEach((x, i) => {
+        x.svg.animate().translate(calcTranslation(x.i, i));
+    });
+}
+
+function calcTranslation(i, j){
+    // translate from position i to j
+    return calcX(j, BARW, BARM) - calcX(i, BARW, BARM);
+
+}
+
+
+/* --------------------- Lib ------------------- */
+
+function randomFrom(list){
+    return list[Math.floor(Math.random() * list.length)];
+}
+
+function range(n){
+    let r = [];
+    while (n > 0){ r.unshift(n); n -= 1; }
+    return r;
+}
+
+/*  -------------------  Buttons -------------------- */
+
+function Butons(draw, chart){
+    return {
+        n: 0,
+        add: function addSortingButton(fn){
+            draw.rect(60, 40)
+                .fill('#999')
+                .move(this.n*80, 20)
+                .click(()=>sort(chart, fn));
+            this.n += 1;
+        }
+    }
+}
+// sorting functions
+let descendent = (a, b) => b.data.n - a.data.n;
+let ascendent = (a, b) => a.data.n - b.data.n;
+let category = (a, b) => a.data.category - b.data.category;
+let shuffle = (a,b) => 0.5 - Math.random();
+
+function newData(i){
+    // Knowledges must have an id, a number, and a discipline (nat);
+    return {
+        id: i,
+        name: `Something ${ i }`,
+        category: randomFrom(SET),
+        n: (MAX_BAR_H) * Math.random(),  // random from [0, 400).
+    }
+}
+
+
+/* ------------------------ Final Chart ------------------------------ */
+
+function createChart(){
+    let svg = SVG('#chart').size(WIDTH, HEIGHT);
+
+    let data = range(N).map(newData);
+    data[7].name = 'A long name test';
+    data[8].name = 'short';
+
+    // Draw the chart.
+    let chart = data.map((d, i) => drawBar(svg, d, i));
+
+    // Sorting button.
+    let buttons = Butons(svg, chart);
+    buttons.add(ascendent);
+    buttons.add(descendent);
+    buttons.add(category);
+    buttons.add(shuffle);
+}
+
+
+
+/* ------------------------ Main ---------------------------------- */
+
+const N = 60;                               // number of elements
+const SET = [0, 1, 2, 3];                   // sets of items
+const BARW = 22;                            // bar width
+const HEIGHT = 920;
+const MAX_BAR_H = 520;                      // length of taller bar.
+const BARM = BARW / 10;                     // distance btw bars.
+const WIDTH = N * (BARW + BARM) + BARM;     // A bit of margin in both sides.
+
+createChart();
+
+
+</script>
+<style>
+
+.lable {
+    fill: #999;
+}
+
+</style>
+</html>
