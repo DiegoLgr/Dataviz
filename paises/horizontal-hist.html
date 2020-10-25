@@ -1,0 +1,173 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.0.16/svg.min.js" integrity="sha512-p3Tp2zn+wApBreZCgRkmMwnfpN8MUPXzzOihXx7iGYXqE7t6m9drY8HeyMeeFuDWiTFKrGUrq3jpbT0vX6zY/Q==" crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <meta charset="utf-8">
+
+    <title>Horizontal Histogram</title>
+</head>
+
+<body>
+<div style="display: flex; justify-content: center;">
+    <svg id="chart">
+    </svg>
+</div>
+
+</body>
+<script src="countries.js">
+</script>
+<script>
+
+
+console.log(countries);
+
+const OFFSET = 100
+const N = 60;                               // number of elements
+const SET = [0, 1, 2, 3];                   // sets of items
+const BARW = 22;                            // bar width
+const HEIGHT = 2000;
+const MAX_BAR_H = 520;                      // length of taller bar.
+const BARM = BARW / 10;                     // distance btw bars.
+const WIDTH = N * (BARW + BARM) + BARM;     // A bit of margin in both sides.
+var svg = SVG('#chart').size(WIDTH, HEIGHT);;
+
+let data = range(N).map(newData);
+data[7].name = 'A long name test';
+data[8].name = 'short';
+
+var chart = createChart(data);
+
+
+
+/* --------------------- Final Visualization --------------------------- */
+function createChart(data){
+    // Bar chart.
+    let chart = data.map(d => drawBar(d));
+    // Sorting button.
+    let n_buttons = 0;
+    n_buttons = addButton(n_buttons, ascendent);
+    n_buttons = addButton(n_buttons, descendent);
+    n_buttons = addButton(n_buttons, category);
+    n_buttons = addButton(n_buttons, shuffle);
+    return chart;
+}
+
+
+/* --------------- Chart -------------------*/
+// Creation and manipulation of the chart
+
+function drawBar(data){
+    let rect = svg.rect(data.h, BARW)
+        .x(190)
+
+    let lable = svg.text(data.name)
+        .font({ anchor: 'end' })
+        .dx(170)
+        .addClass('lable');
+
+
+    let bar = svg.group()
+        .add(rect)
+        .add(lable)
+        .attr({ fill: mapCat(data.category) })
+        .y(data.y)
+        .addClass('bar');
+
+    return { data: data, svg: bar };
+}
+
+function calcY(i){
+    return OFFSET + i*BARW + i*BARM;
+}
+
+function addButton(n, fn){
+    svg.rect(60, 40)
+        .fill('#999')
+        .move(100 + n * 80, 20)
+        .click(() => rearrange(fn));
+    return n + 1;
+}
+
+function rearrange(fn){
+    chart = chart.sort(fn);
+    chart.forEach((x, i) => {
+        x.svg.animate()
+            .dy(calcTranslation(x, i))
+            .after(() => update(x, i))
+    });
+}
+
+function update(x, i){
+        x.data.i = i;
+        x.data.y = calcY(x.data.i);
+}
+
+
+/* ------------- Shorting Bars ----------------*/
+
+function calcTranslation(d, j){
+    // translate from position i to j
+    return calcY(j) - d.data.y;
+}
+
+
+
+/* --------------------- Mock ------------------- */
+// Related with de data.
+
+function newData(i){
+    // Knowledges must have an id, a number, and a discipline (nat);
+    return {
+        i: i,
+        y: calcY(i),
+        name: `Something ${ i }`,
+        category: randomFrom(SET),
+        h: (MAX_BAR_H) * Math.random(),  // random from [0, 400).
+    }
+}
+
+function mapCat(cat){
+    switch (cat){
+        case 0: return '#313962';
+        case 1: return '#5f6caf';
+        case 2: return '#95ce8e';
+        case 3: return '#e65a28';
+    }
+}
+
+// Orderings.
+function descendent(a, b){ return b.data.h - a.data.h };
+function ascendent(a, b){ return a.data.h - b.data.h };
+function category(a, b){ return a.data.category - b.data.category; };
+function shuffle(a,b){ return 0.5 - Math.random(); };
+
+
+/* --------------------- Lib ------------------- */
+
+function randomFrom(list){
+    return list[Math.floor(Math.random() * list.length)];
+}
+
+function range(n){
+    let r = [];
+    while (n > 0){ r.unshift(n); n -= 1; }
+    return r;
+}
+
+
+/* ------------------------ Main ---------------------------------- */
+
+
+
+
+</script>
+<style>
+
+.lable {
+    fill: #777;
+}
+
+</style>
+</html>

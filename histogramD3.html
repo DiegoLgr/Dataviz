@@ -1,0 +1,26 @@
+
+/*
+.classed("bar", true);
+let svg = d3.select("svg")
+barChartD3(svg, data, height, offset, barw, margin);
+function barChartD3(svg, data, y0, offset, w, m){
+    svg.selectAll("rect")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("x", (_, i) => offset + i*w + i*m )
+        .attr("y", d => y0 - d.n)
+        .attr("width", w)
+        .attr("height", d => d.n)
+        .attr("fill", d => mapCat(d.category));
+
+    svg.selectAll("circle")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("cx", (_, i) => offset + (i+0.5)*w + i*m )
+        .attr("cy", d => y0 - d.n)
+        .attr("r", w/2)
+        .attr("fill", d => mapCat(d.category));
+}
+*/

@@ -1,0 +1,62 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.0.16/svg.min.js" integrity="sha512-p3Tp2zn+wApBreZCgRkmMwnfpN8MUPXzzOihXx7iGYXqE7t6m9drY8HeyMeeFuDWiTFKrGUrq3jpbT0vX6zY/Q==" crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="data.js"></script>
+    <script src="dataviz.js"></script>
+    <script src="chart.js"></script>
+    <script src="visualization.js"></script>
+    <meta charset="utf-8">
+
+    <title>Horizontal Histogram</title>
+</head>
+
+<body>
+<div style="display: flex; justify-content: center;">
+    <svg id="chart">
+    </svg>
+</div>
+
+</body>
+<script>
+
+const UI =
+    { offset: 100
+    , n: 60
+    , buttons: []
+    , margin: 10
+    , set: [1, 2, 3]
+    , barw: 22
+    , height: 2000
+    , maxBarH: 520
+    , colorScale: ['#313962', '#5f6caf', '#95ce8e', '#e65a28']
+}
+
+
+const svg = SVG('#chart').size(width(UI), height(UI));
+
+const data = get_data(20).map(x => {
+    return { height: x.population, cat: continentToEnum(x.continent), name: x.name }
+});
+
+
+//createChart(asBars(UI, data));
+let visualization = new Visualization();
+visualization
+    .setButtons([ascendent, descendent])
+    .setData(asBars(UI, data))
+    .setUi(UI)
+    .draw()
+
+
+</script>
+<style>
+
+.lable {
+    fill: #777;
+}
+
+</style>
+</html>
