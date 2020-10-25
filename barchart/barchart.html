@@ -23,30 +23,24 @@
 <script>
 
 const UI =
-    { offset: 100
-    , n: 60
-    , buttons: []
+    { n: 60
     , margin: 10
-    , set: [1, 2, 3]
     , barw: 22
     , height: 2000
     , maxBarH: 520
-    , colorScale: ['#313962', '#5f6caf', '#95ce8e', '#e65a28']
 }
 
 
-const svg = SVG('#chart').size(width(UI), height(UI));
 
 const data = get_data(20).map(x => {
     return { height: x.population, cat: continentToEnum(x.continent), name: x.name }
 });
 
 
-//createChart(asBars(UI, data));
 let visualization = new Visualization();
 visualization
     .setButtons([ascendent, descendent])
-    .setData(asBars(UI, data))
+    .setData(data)
     .setUi(UI)
     .draw()
 
