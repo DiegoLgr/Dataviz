@@ -1,19 +1,28 @@
 /* --------------- Chart -------------------*/
 class BarChart{
-    constructor(barw, maxBarh, colorScale, offset, marginPercentage, svg){
+    constructor(barw, maxBarh, colorScale, offset, barMargin,  maxn){
         this.barw = barw;
         this.maxBarh = maxBarh;
         this.colorScale = colorScale;
         this.offset = offset;
-        this.svg = svg;
-        this.chart = undefined;
+        this.barMarg = barMargin;
+        this.maxn = maxn;
 
-        this.barMarg = this.barw / marginPercentage;
+        this.chart = undefined;
+        this.svg = undefined;
+        this.bars = undefined;
     }
+    getWidth(){
+        return this.maxn * (this.barw + this.barMarg) * this.barMarg;
+    }
+    setSVG(svg){ this.svg = svg }
 
     enter(data){
-        const bars = this.asBars(data);
-        this.chart = bars.map(x => this.drawBar(x));
+        this.bars = this.asBars(data);
+        return this;
+    }
+    draw(){
+        this.chart = this.bars.map(x => this.drawBar(x));
         return this;
     }
 
@@ -72,6 +81,8 @@ class BarChart{
 
     scaleLinear(data){ return  this.maxBarh/max(data) }
     scaleColor(cat) { return this.colorScale[cat]; }
+
+    log(){ console.log(this) }
 
 }
 

@@ -22,12 +22,13 @@
 </body>
 <script>
 
-const UI =
-    { n: 60
-    , margin: 10
-    , barw: 22
-    , height: 2000
-    , maxBarH: 520
+const barUI = {
+    barw: 22,
+    maxBarh: 520,
+    colors: ['#313962', '#5f6caf', '#95ce8e', '#e65a28'],
+    offset: 100,
+    barMargin: 2.2,
+    maxBars: 40,
 }
 
 
@@ -36,12 +37,13 @@ const data = get_data(20).map(x => {
     return { height: x.population, cat: continentToEnum(x.continent), name: x.name }
 });
 
-
-let visualization = new Visualization();
+barChart = new BarChart(barUI.barw, barUI.maxBarh, barUI.colors, barUI.offset, barUI.barMargin,
+                barUI.maxBars);
+barChart.enter(data);
+const height = 2000;
+let visualization = new Visualization(height, barChart);
 visualization
     .setButtons([ascendent, descendent])
-    .setData(data)
-    .setUi(UI)
     .draw()
 
 

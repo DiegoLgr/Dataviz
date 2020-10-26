@@ -1,41 +1,22 @@
 class Visualization{
-    constructor(){
+    // This class shold be resposible of drawing all elements in the visualization,
+    constructor(height, barchart){
+        this.height = height;
+        this.barChart = barchart
+
         this.buttons = [];
-        this.data = {};
-        this.chart = {};
         this.svg = {};
-
 }
-
-    setSVG(svg){ this.svg = svg; return this; }
     setButtons(callbacks){
         callbacks.forEach(x => this.buttons.push(x));
         return this;
     }
-    setData(data) {
-        this.data = data;
-        return this;
-    }
-    setChart(chart){
-        this.chart = chart;
-        return this;
-    }
-    setUi(ui){
-        this.ui = ui;
-        return this;
-    }
 
     draw(){
-        this.svg = SVG('#chart').size(width(this.ui), height(this.ui));
-        this.barChart = new BarChart(
-             22,
-            520,
-            ['#313962', '#5f6caf', '#95ce8e', '#e65a28'],
-            100,
-            10,
-            this.svg,
-        );
-        this.barChart.enter(this.data);
+        this.svg = SVG('#chart');
+        this.barChart.setSVG(this.svg);
+        this.svg.size(this.barChart.getWidth(), this.height);
+        this.barChart.draw();
         this.renderButtons()
         return this;
     }
@@ -60,9 +41,3 @@ class Visualization{
 
 }
 
-function height(ui){ return ui.height; }
-function width(ui){ return maxn(ui) * (barw(ui) + barMarg(ui)) * barMarg(ui); }
-function barw(ui){ return ui.barw; }
-function margin(ui) { return ui.margin }
-function barMarg(ui){ return barw(ui)/margin(UI); }
-function maxn(ui){ return ui.n; }
